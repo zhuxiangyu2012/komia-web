@@ -32,7 +32,17 @@ const config = {
 		rules:[
 			{
 				test: /\.vue$/,
-				loader: 'vue-loader'
+				use: [
+					{
+						loader:'vue-loader',
+					},
+					{
+						loader: 'iview-loader',
+						options: {
+							prefix: false
+						}
+					}
+				]
 			},
 			{
 				test: /\.js$/,
@@ -41,7 +51,10 @@ const config = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['@babel/preset-env']
+						presets: ['@babel/preset-env'],
+						plugins: [
+							'@babel/plugin-transform-runtime'
+						]
 					}
 				}
 			},
@@ -78,17 +91,18 @@ const config = {
 					}
 				]
 			},
-			/* {
-				test: /\.(woff|eot|ttf)$/i,
+			{
+				test: /\.(woff|eot|ttf)\??.*$/,
 				use: [
 					{
 						loader: 'file-loader',
 						options: {
-							name: '[name].[ext]'
+							name: '[name].[ext]',
+							outputPath: 'fonts'
 						}
 					}
 				]
-			} */
+			}
 		]
 	},
 	plugins:[
@@ -113,7 +127,7 @@ const config = {
 
 if (isDev) {
 	// 作用：在页面上调试代码，使用source-map映射编译代码
-	config.devtool = '#cheap-module-eval-source-map'
+	config.devtool = '#cheap-module-eval-source-map';
 	// 在config上加一个devServer配置
 	config.devServer = {
 	// 启动的服务端口

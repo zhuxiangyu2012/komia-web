@@ -1,7 +1,10 @@
-{
+*{
 	box-sizing: border-box;
 }
 
-#text {
-	color:red
+#app{
+	width: 100vw;
+	height: 100vh;
+	min-width: 850px;
+	min-height: 450px;
 }

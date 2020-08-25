@@ -1,7 +1,6 @@
 <template>
-	<div>
-		<div id="text">{{text}}</div>
-		<div id="img"></div>
+	<div id="app">
+		<router-view></router-view>
 	</div>
 	
 </template>
@@ -15,10 +14,5 @@
 	}
 </script>
 <style>
-	#img {
-		display: block;
-		width: 800px;
-		height:800px;
-		background: url('~@s/img/宝宝.PNG') no-repeat;
-	}
+	
 </style>
