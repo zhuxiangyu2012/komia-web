@@ -27,6 +27,7 @@
 </template>
 	
 <script>
+	import  JSEncrypt  from 'jsencrypt'
 	export default {
 		data(){
 			return {
@@ -37,20 +38,41 @@
 		},
 		methods:{
 			doLogin:function(){
-				let param = new URLSearchParams();
-				param.append("username", this.username);
-				param.append("password", this.password);
-				this.axios.post(this.loginUrl, param)
-					.then((response) => {
-						let user = response.data;
-						this.$store.commit('setCurrentUser',user);
-						this.$store.dispatch('getResources',user.id);
-						
-						this.$router.push("/home");
-					})
-					.catch((error) => {
-						console.log(error);
-					});
+				this.axios.get("/common/publickey").then((response) => {
+					let publickey = response.data;
+					// 新建JSEncrypt对象
+					let encryptor = new JSEncrypt();
+					// 设置公钥
+					encryptor.setPublicKey(publickey);
+					let password = encryptor.encrypt(this.password);
+					
+					let param = new URLSearchParams();
+					param.append("username", this.username);
+					param.append("password", password);
+					
+					this.axios.post(this.loginUrl, param)
+						.then(async (response) => {
+							let user = response.data;
+							this.$store.commit('setCurrentUser',user);
+							await this.$store.dispatch('getResources',user.id);
+							this.loginSuccess();
+						})
+						.catch((error) => {
+							console.log(error);
+						});
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+			
+			},
+			loginSuccess:function(){
+				let menuTrees = this.$store.state.menu.menuTrees;
+				if(menuTrees&&menuTrees.length>0){
+					this.$router.push(menuTrees[0].url);
+				}else{
+					this.$router.push("/home");
+				}
 			}
 		}
 	}

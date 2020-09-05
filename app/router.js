@@ -1,6 +1,8 @@
 import Home from '@p/home.vue'
 import Login from '@p/login.vue'
-import Sub from '@p/sub.vue'
+import Welcome from '@p/welcome.vue'
+import User from '@p/user/user.vue'
+import Resource from '@p/resource/resource.vue'
 
 const routers = [
     {
@@ -12,13 +14,27 @@ const routers = [
 	{
 		path: '/home',component: Home,
 		children: [
-		        {
-					path: '',redirect:'sub'
-		        },
-		        {
-					path: 'sub',component:Sub
-				}
-		      ]
+			{
+				path: '',redirect:'welcome'
+			},
+			{
+				path: 'welcome',component:Welcome
+			}
+		]
+	},
+	{
+		path: '/sysmgt',component: Home,
+		children: [
+			{
+				path: '',redirect:'user'
+			},
+			{
+				path: 'user',component:User
+			},
+			{
+				path: 'resouce',component:Resource
+			}
+		]
 	}
 ];
 export default routers;

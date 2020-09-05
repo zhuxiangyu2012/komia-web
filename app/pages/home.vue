@@ -2,44 +2,40 @@
 	<div class="layout">
 	        <Layout>
 	            <Header>
-	                <Menu mode="horizontal" theme="light" active-name="1" >
+	                <Menu mode="horizontal" theme="light" :active-name="currentMenuKey" >
 						<div class="header-container">
 							<div class="header-logo">Komia</div>
 							<div class="header-nav">
-							    <MenuItem name="1">
-							        <Icon type="ios-navigate"></Icon>
-							        系统管理
-							    </MenuItem>
-							    <MenuItem name="2">
-							        <Icon type="ios-keypad"></Icon>
-							        统计分析
-							    </MenuItem>
-							    <MenuItem name="3">
-							        <Icon type="ios-analytics"></Icon>
-							        微信管理
-							    </MenuItem>
-							    <MenuItem name="4">
-							        <Icon type="ios-paper"></Icon>
-							        其他
-							    </MenuItem>
+								<MenuItem :name="item.key" v-for="item in menus" :key="item.key" :to="item.url">
+								    {{item.name}}
+								</MenuItem>
 							</div>
-							<div class="header-user">{{username}}</div>
+							<div class="header-user">
+								 <Dropdown transfer @on-click="me">
+									<a href="javascript:void(0)">
+									     <Icon type="md-contact" size="28"/>
+										 {{username}}
+									</a>
+									<DropdownMenu slot="list">
+										<DropdownItem name="info">个人信息</DropdownItem>
+										<DropdownItem name="logout">退出系统</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
+							</div>
 						</div>
 	                </Menu>
 	            </Header>
 	            <Layout>
 	                <Sider hide-trigger style="background: #fff;">
-	                    <Menu active-name="1-2" theme="light" width="auto">
-							<MenuItem name="1-1">用户管理</MenuItem>
-							<MenuItem name="1-2">角色管理</MenuItem>
-							<MenuItem name="1-3">资源管理</MenuItem>
-							<MenuItem name="1-4">菜单管理</MenuItem>
-							<MenuItem name="1-5">系统备份</MenuItem>
+	                    <Menu :active-name="currentSubMenuKey" theme="light" width="auto">
+							<MenuItem :name="item.key" v-for="item in currentSubTrees" :key="item.key" :to="item.url">
+								{{item.name}}
+							</MenuItem>
 	                    </Menu>
 	                </Sider>
 	                <Layout>
 	                    <Content >
-	                        <router-view></router-view>
+							<router-view></router-view>
 	                    </Content>
 	                </Layout>
 	            </Layout>
@@ -51,12 +47,48 @@
 	export default {
 		data(){
 			return {
-				text:"Hello My Vue"
+				
 			}
+		},
+		mounted() {
+			
 		},
 		computed:{
 			username: function() {
 				return this.$store.state.login.currentUser.nickname;
+			},
+			menus: function() {
+				return this.$store.state.menu.menuTrees;
+			},
+			currentSubTrees: function(){
+				return this.$store.state.menu.currentSubTrees;
+			},
+			currentMenuKey: function(){
+				return this.$store.state.menu.currentMenuKey;
+				
+			}, 
+			currentSubMenuKey: function(){
+				return this.$store.state.menu.currentSubMenuKey;
+			}
+		},
+		methods:{
+			me: function(v){
+				if(v == "logout"){
+					this.axios.get("/logout").then((response) => {
+						this.$store.commit('setCurrentUser',{});
+						this.$router.push("/login");
+					})
+					.catch((error) => {
+						console.log(error);
+					});
+				}else{
+					this.axios.get("/user/users").then((response) => {
+						console.log("test session out")
+					})
+					.catch((error) => {
+						console.log(error);
+					});
+				}
 			}
 		}
 	}
@@ -78,16 +110,17 @@
 	}
 	.layout div.ivu-layout {
 		padding-left: 5px;
-		height: calc(100% - 20px);
+		height: calc(100% - 5px);
 	}
 	.layout div.ivu-layout-sider{
-		height: calc(100% - 20px);
-		overflow-y:auto;
+		height: calc(100% - 5px);
+		overflow-y:hidden;
 		 /*IE下隐藏滚动条，仍然可以滚动*/
 		-ms-overflow-style:none;
 	}
 	.layout div.ivu-layout-sider::-webkit-scrollbar{width:0px}
 	.layout div.ivu-layout .ivu-layout-content{
+		overflow: hidden;
 		word-break: break-all;
 		padding: 15px 15px 10px 15px;
 		background: #fff;
@@ -108,7 +141,13 @@
 	    margin: 0 20px;
 	}
 	.header-user{
+		right: 20px;
 		width: 120px;
 		display: inline-block;
+		text-align: right;
+		padding-right: 20px;
+	}
+	.header-user i {
+		vertical-align: middle;
 	}
 </style>

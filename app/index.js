@@ -15,6 +15,10 @@ Vue.use(ViewUI);
 Axios.defaults.baseURL = "http://127.0.0.1:80/komia";
 Axios.defaults.withCredentials = true;
 
+const router = new VueRouter({
+		routes: Routers
+});
+
 // 添加响应拦截器
 Axios.interceptors.response.use(response => {
     // 对响应数据做点什么
@@ -25,6 +29,10 @@ Axios.interceptors.response.use(response => {
     // 对响应错误做点什么
     console.log('err' + error)// for debug
 	console.log('errcode' + error.response.status)// for debug
+	if("401" == error.response.status&&error.response.data.code=="noauthen"){
+		store.commit('setCurrentUser',{});
+		router.push("/login");
+	}
     return Promise.reject(error);
 });
 
@@ -34,25 +42,21 @@ Vue.prototype.axios = Axios;
 (async function getCurrentUser(){
 	let currentUserUrl = "/currentUser"
 	await Axios.get(currentUserUrl)
-		.then((response) => {
+		.then(async (response) => {
 			let user = response.data;
 			if(user){
 				store.commit('setCurrentUser',user);
+				await store.dispatch('getResources',user.id);
 			}
 		})
 		.catch((error) => {
 			console.log(error);
 		});
-			
-	const router = new VueRouter({
-		routes: Routers
-	});
+	
 	
 	router.beforeEach((to, from, next) => {
 		console.log("from " + from.path  + " to " + to.path);
 		let user = store.state.login.currentUser;
-		console.log("--+++");
-		console.log(user);
 		if(!user.username){
 			if(to.path != "/login"){
 				next("/login");
@@ -63,6 +67,7 @@ Vue.prototype.axios = Axios;
 			if(to.path == "/" || to.path == "/login"){
 				next("/home");
 			}else{
+				store.commit('moveRoute',to.path);
 				next();
 			}
 		}
