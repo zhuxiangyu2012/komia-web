@@ -1,6 +1,6 @@
 <template>
 	<div class="layout">
-	        <Layout>
+	        <Layout class="kmain">
 	            <Header>
 	                <Menu mode="horizontal" theme="light" :active-name="currentMenuKey" >
 						<div class="header-container">
@@ -25,15 +25,15 @@
 						</div>
 	                </Menu>
 	            </Header>
-	            <Layout>
+	            <Layout class="kdown">
 	                <Sider hide-trigger style="background: #fff;">
-	                    <Menu :active-name="currentSubMenuKey" theme="light" width="auto">
+	                    <Menu :active-name="currentSubMenuKey" theme="light" width="auto" ref="side_menu">
 							<MenuItem :name="item.key" v-for="item in currentSubTrees" :key="item.key" :to="item.url">
 								{{item.name}}
 							</MenuItem>
 	                    </Menu>
 	                </Sider>
-	                <Layout>
+	                <Layout class="kright">
 	                    <Content >
 							<router-view></router-view>
 	                    </Content>
@@ -52,6 +52,11 @@
 		},
 		mounted() {
 			
+		},
+		updated() {
+			this.$nextTick(() => {
+				this.$refs.side_menu.updateActiveName();
+			})
 		},
 		computed:{
 			username: function() {
@@ -108,9 +113,14 @@
 		overflow-y:auto;
 		background-color: #fff;
 	}
-	.layout div.ivu-layout {
-		padding-left: 5px;
+	.layout div.kmain {
 		height: calc(100% - 5px);
+	}
+	.layout div.kdown {
+		height: calc(100% - 65px);
+	}
+	.layout div.kright {
+		padding-left: 5px;
 	}
 	.layout div.ivu-layout-sider{
 		height: calc(100% - 5px);

@@ -3,5 +3,8 @@ export default {
 		username:"",
 		nickname:"",
 		status:""
-	}
+	},
+	pageOptions:[
+		1,8,12,16
+	]
 }

@@ -8,3 +8,58 @@
 	min-width: 850px;
 	min-height: 450px;
 }
+
+.main-content {
+		height: 100%;
+		max-height: calc(100% - 3px);
+		overflow-y: auto;
+}
+
+.search-area {
+		display: block;
+		border: 1px solid lightgray;
+		height: 50px;
+		overflow-x:hidden;
+		padding:0 10px;
+}
+.search-area .krow {
+	line-height: 45px;
+}
+.search-data {
+	display: block;
+	height: calc(100% - 105px);
+	width: 100%;
+	overflow: hidden;
+}
+.search-data .search-data-table {
+	overflow: auto;
+	display: block;
+	max-height: calc(100% - 45px);
+}
+.search-data .search-data-pager {
+	display: block;
+	height: 45px;
+	line-height: 45px;
+	text-align: center;
+}
+.main-content .search-buttons {
+	display: block;
+	height: 50px;
+	line-height: 50px;
+}
+.main-content .search-buttons .bleft{
+	display: inline-block !important;
+	margin-left: 20px;
+}
+.main-content .search-buttons .bright{
+	display: inline-block !important; 
+	float: right; 
+	margin-right: 20px;
+}
+
+
+.km-vertical-center-modal {
+	top: calc(50% - 64px) !important;
+	transform: translateY(-50%);
+	overflow: initial !important;
+}

@@ -15,7 +15,7 @@
 				<br />
 				<Input v-model="password" type="password" password  prefix="md-lock" class="login-form" size="large" placeholder="Enter password" />
 				<br />
-				<span class="error-msg">用户名或者密码错误</span>
+				<span class="error-msg">{{errorMsg}}</span>
 				<br>
 				<Button class="login-button" type="success" size="large" @click="doLogin">Sign In</Button>
 			</div>
@@ -33,11 +33,17 @@
 			return {
 				username:"",
 				password:"",
+				errorMsg:" ",
 				loginUrl:"/kmlogin"
 			}
 		},
 		methods:{
 			doLogin:function(){
+				if(!this.username || !this.password){
+					this.errorMsg = "请输入用户名和密码";
+					return;
+				}
+				
 				this.axios.get("/common/publickey").then((response) => {
 					let publickey = response.data;
 					// 新建JSEncrypt对象
@@ -46,11 +52,7 @@
 					encryptor.setPublicKey(publickey);
 					let password = encryptor.encrypt(this.password);
 					
-					let param = new URLSearchParams();
-					param.append("username", this.username);
-					param.append("password", password);
-					
-					this.axios.post(this.loginUrl, param)
+					this.axios.post(this.loginUrl, {username:this.username,password:password})
 						.then(async (response) => {
 							let user = response.data;
 							this.$store.commit('setCurrentUser',user);
@@ -58,6 +60,7 @@
 							this.loginSuccess();
 						})
 						.catch((error) => {
+							this.errorMsg = error.response.data.msg;
 							console.log(error);
 						});
 				})
@@ -152,10 +155,11 @@
 	}
 	
 	.error-msg {
-		display: inline-block;
-		margin: 6px 0;
+		display: block;
+		margin: 6px 0  -10px 0;
 		color: orangered;
 		height: 18px;
+		width:100%;
 		line-height: 18px;
 	}
 	.login-button{

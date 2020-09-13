@@ -7,6 +7,7 @@ import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 import Axios from 'axios';
 import store from './store';
+import { stringify } from 'qs';
 
 Vue.use(VueRouter);
 Vue.use(ViewUI);
@@ -19,11 +20,30 @@ const router = new VueRouter({
 		routes: Routers
 });
 
+//Axios请求头设置
+Axios.interceptors.request.use(
+  config => {
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+	// 将对象参数转换为序列化的 URL 形式（key=val&key=val）
+	config.data = stringify(config.data);
+    return config
+  },
+  error => {
+    console.log(error) // for debug
+    Promise.reject(error)
+  }
+)
+
+
 // 添加响应拦截器
 Axios.interceptors.response.use(response => {
     // 对响应数据做点什么
     const res = response.data;
-    //对错误代码做处理
+	//对错误代码做处理
+	if(res.success == false){
+		return Promise.reject("出错了");
+	}
+    
     return res;
 }, error => {
     // 对响应错误做点什么
